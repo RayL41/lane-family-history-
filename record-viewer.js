@@ -284,6 +284,40 @@
       });
     }).catch(failed);
   }
+
+  // Lane update 6 October 2026: Return navigation on ordinary website pages.
+  var viewerScript = document.currentScript;
+  var homeUrl = new URL('index.htm', viewerScript && viewerScript.src || location.href).href;
+  function installPageReturn() {
+    if (!document.body || document.getElementById('lane-page-return')) return;
+    // A page embedded by another viewer uses that viewer's Return control.
+    if (window.self !== window.top) return;
+    var bar = document.createElement('div');
+    bar.id = 'lane-page-return';
+    bar.setAttribute('role', 'navigation');
+    bar.setAttribute('aria-label', 'Return navigation');
+    bar.style.cssText = 'position:sticky;top:0;z-index:2147483646;clear:both;display:block;text-align:left;padding:10px;background:#f2f2f2;border-bottom:2px solid #555;';
+    var back = button('\u2190 RETURN TO PREVIOUS PAGE', function () {
+      if (window.history.length > 1) { window.history.back(); return; }
+      // A link opened in a new tab may still tell us its originating page.
+      try {
+        var previous = new URL(document.referrer);
+        var home = new URL(homeUrl);
+        if (previous.origin === home.origin &&
+            previous.pathname.indexOf(home.pathname.slice(0, home.pathname.lastIndexOf('/') + 1)) === 0 &&
+            previous.href !== location.href) {
+          location.assign(previous.href); return;
+        }
+      } catch (e) {}
+      location.assign(homeUrl);
+    });
+    bar.appendChild(back);
+    document.body.insertBefore(bar, document.body.firstChild);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', installPageReturn);
+  } else { installPageReturn(); }
+
   document.addEventListener('click',function(event) {
     if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     var node = event.target;
