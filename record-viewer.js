@@ -231,7 +231,7 @@
     current.appendChild(content); document.body.appendChild(current); back.focus();
     if (!/\.pdf(?:[?#].*)?$/i.test(link.href)) {
       var img = document.createElement('img'); img.src = link.href; img.alt = title.textContent;
-      img.style.cssText = 'display:block;width:85%;max-width:100% height:auto;margin:auto;'; content.appendChild(img); return;
+      img.style.cssText = 'display:block;width:85%;max-width:100%;height:auto;margin:auto;'; content.appendChild(img); return;
     }
     if (location.protocol === 'file:') {
       var frame = document.createElement('iframe'); frame.src = link.href; frame.title = title.textContent;
